@@ -1,0 +1,6 @@
+1,1,Parque diversiones,20
+2,2,Transmilenio 7a,30
+1,3,Plantar arboles,40
+2,4,Pavimentar la cali,50
+2,5,extender la boyaca,60
+1,6,quitar vendedores ambulantes,70
