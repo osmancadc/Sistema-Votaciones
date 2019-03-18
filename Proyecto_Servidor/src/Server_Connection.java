@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -183,7 +185,7 @@ public class Server_Connection extends Thread{
 
 	private boolean validarConsulta_e(String idCons) {
 		for(Consulta c:lista_c){
-//			System.out.println(c.getID_Consulta()+"="+idCons);
+			//			System.out.println(c.getID_Consulta()+"="+idCons);
 			if(idCons.compareTo(c.getID_Consulta()) ==0)
 				return true;
 		}
@@ -292,26 +294,57 @@ public class Server_Connection extends Thread{
 		String resultado = "";
 		File archivo = null;
 		FileReader fr = null;
+		ArrayList<Votos> votos = new ArrayList<Votos>();
 		BufferedReader br = null;
 		try {
 			archivo = new File("./votos.txt");
 			fr = new FileReader (archivo);
 			br = new BufferedReader(fr);
 			String linea;
-			int cont=0;
 			while((linea=br.readLine())!=null) {
 				System.out.println(linea);
 				String[] tokens = linea.split(",");
 				String idvoto = tokens[0];
 				String IDConsulta = tokens[1];
 				String voto = tokens[2];
-				String entidad_c=get_entidad(IDConsulta);	
-				if(id.equals(entidad_c)){
+
+				votos.add(new Votos(idvoto,IDConsulta,voto));
+				/*if(id.equals(entidad_c)){
 					resultado = resultado + idvoto + "," + IDConsulta + "," + voto + "\n";
-					cont++;
+					
+				}*/
+			}
+			Collections.sort(votos);
+			int p_actual=-1;
+			int contA=-1,contB=-1,contM=-1;
+			for(Votos v:votos) {	
+				String entidad_c=get_entidad(v.getId_proyecto());
+				if(Integer.parseInt(v.getId_proyecto())>p_actual) {
+					p_actual=Integer.parseInt(v.getId_proyecto());
+					if(contA>-1 && contB>-1 && contM>-1) {
+						resultado=resultado+"\nTotal de votos Altos: "+contA;
+						resultado=resultado+"\nTotal de votos Medios: "+contM;
+						resultado=resultado+"\nTotal de votos bajos: "+contB;
+					}
+					contA=0;
+					contB=0;
+					contM=0;
+					resultado=resultado+"\n\n"+get_nombre_proyecto(v.getId_proyecto());
+				}
+				if(entidad_c.compareTo(id)==0) {
+					if(v.getVoto().compareTo("alto")==0)
+						contA++;
+					else if(v.getVoto().compareTo("medio")==0)
+						contM++;
+					else
+						contB++;
 				}
 			}
-			resultado=resultado+"\nTotal de votos: "+cont;
+			resultado=resultado+"\nTotal de votos Altos: "+contA;
+			resultado=resultado+"\nTotal de votos Medios: "+contM;
+			resultado=resultado+"\nTotal de votos bajos: "+contB;
+			resultado+="\n\n\nNOTA: los proyectos que aun no tienen votos no apareceran aqui.\n\n";
+
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -327,5 +360,13 @@ public class Server_Connection extends Thread{
 			}
 		}
 		return resultado;
+	}
+
+	private String get_nombre_proyecto(String id_proyecto) {
+		for(Consulta c:lista_c) {
+			if(id_proyecto.compareTo(c.getID_Consulta())==0)
+				return c.getNombre();
+		}
+		return null;
 	}
 }
