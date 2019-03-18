@@ -13,6 +13,7 @@ public class Directorio {
 			List<Proxy> lista_proxys = new ArrayList<Proxy>();
 			int puerto = 6666;
 			ServerSocket directorio = new ServerSocket(puerto);
+			new Control_errores(lista_proxys);
 			while (true) {
 				Socket socket = directorio.accept();
 				Directorio_Connection c = new Directorio_Connection(socket,lista_proxys);

@@ -1,18 +1,21 @@
-
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.*;
+import java.util.concurrent.TimeUnit;
 
 public class Proxy {
+	public static int contador_global=0;
+	public static int reloj_global=0;
+	public static String cache="";
+	public static boolean pedido=false;
 
 	public static void main(String[] args) {
-
 		try {
 			int serverPort = Integer.parseInt(args[0]);
 			ServerSocket proxy = new ServerSocket(serverPort);
 			registrar_directorio(serverPort);
+			new Reloj_global();
 			while (true) {
 				Socket clientsocket = proxy.accept();
 				Proxy_Connection c = new Proxy_Connection(clientsocket);
@@ -36,4 +39,5 @@ public class Proxy {
 			e.printStackTrace();
 		}
 	}
+	
 }
