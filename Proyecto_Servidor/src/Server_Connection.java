@@ -295,6 +295,7 @@ public class Server_Connection extends Thread{
 		File archivo = null;
 		FileReader fr = null;
 		ArrayList<Votos> votos = new ArrayList<Votos>();
+		boolean tienen_v=false;
 		BufferedReader br = null;
 		try {
 			archivo = new File("./votos.txt");
@@ -311,7 +312,7 @@ public class Server_Connection extends Thread{
 				votos.add(new Votos(idvoto,IDConsulta,voto));
 				/*if(id.equals(entidad_c)){
 					resultado = resultado + idvoto + "," + IDConsulta + "," + voto + "\n";
-					
+
 				}*/
 			}
 			Collections.sort(votos);
@@ -329,9 +330,14 @@ public class Server_Connection extends Thread{
 					contA=0;
 					contB=0;
 					contM=0;
-					resultado=resultado+"\n\n"+get_nombre_proyecto(v.getId_proyecto());
+					if(entidad_c.compareTo(id)==0) {
+						resultado=resultado+"\n\n"+get_nombre_proyecto(v.getId_proyecto());
+					}
+					else {contA--; contB--; contM--;}
+
 				}
 				if(entidad_c.compareTo(id)==0) {
+					tienen_v=true;
 					if(v.getVoto().compareTo("alto")==0)
 						contA++;
 					else if(v.getVoto().compareTo("medio")==0)
@@ -340,9 +346,14 @@ public class Server_Connection extends Thread{
 						contB++;
 				}
 			}
+			if(contA>-1 && contB>-1 && contM>-1) {
 			resultado=resultado+"\nTotal de votos Altos: "+contA;
 			resultado=resultado+"\nTotal de votos Medios: "+contM;
 			resultado=resultado+"\nTotal de votos bajos: "+contB;
+			}
+			if(!tienen_v) {
+				resultado+="\n\nTus proyectos aun no tienen votaciones!";
+			}
 			resultado+="\n\n\nNOTA: los proyectos que aun no tienen votos no apareceran aqui.\n\n";
 
 		}
